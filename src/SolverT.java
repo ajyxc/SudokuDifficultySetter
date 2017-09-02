@@ -132,7 +132,23 @@ public class SolverT {
             }
 
             //check that region
-
+            //check that region
+            boolean foundr = false;
+            int row = (int)i/3;
+            int col = (int)j/3;
+            int tempr,tempc;
+            for(int x = row*3; x < row*3+3; x++){
+                for(int y = col*3; y < col*3+3; y++ ){
+                    if(compareArrayList(possibleEntries(board,i,j),possibleEntries(board,x,y))){
+                        foundr = true;
+                        tempr = x;
+                        tempc = y;
+                        break;
+                    }
+                }
+            }
+            // if found, get rid of these draft from this region
+            
 
         }
     }

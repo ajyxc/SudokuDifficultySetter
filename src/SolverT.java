@@ -72,6 +72,7 @@ public class SolverT {
     }
 
     public int[][] candidateLine(int[][] board, int i, int j) {
+        //2 grid with only 2 same drafts
         if (possibleEntries(board, i, j).size() == 2) {
             //check that row
             int temp = 0;
@@ -136,7 +137,7 @@ public class SolverT {
             boolean foundr = false;
             int row = (int)i/3;
             int col = (int)j/3;
-            int tempr,tempc;
+            int tempr = 0,tempc = 0;
             for(int x = row*3; x < row*3+3; x++){
                 for(int y = col*3; y < col*3+3; y++ ){
                     if(compareArrayList(possibleEntries(board,i,j),possibleEntries(board,x,y))){
@@ -148,7 +149,23 @@ public class SolverT {
                 }
             }
             // if found, get rid of these draft from this region
-            
+            if(foundr){
+                int l = possibleEntries(board, i, j).get(0);
+                int k = possibleEntries(board, i, j).get(1);
+                for(int x = row*3; x < row*3+3; x++) {
+                    for(int y = col*3; y < col*3+3; y++ ){
+                        if (x != tempr && y != tempc && x!=i && y!= j) {
+                            ArrayList<Integer> drafts = possibleEntries(board, x, y);
+                            if (drafts.contains(l)) {
+                                possibleEntries(board, x, y).remove(l);
+                            }
+                            if (drafts.contains(k)) {
+                                possibleEntries(board, x, y).remove(k);
+                            }
+                        }
+                    }
+                }
+            }
 
         }
     }

@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by apple on 2017-09-01.
@@ -16,7 +15,7 @@ public class SolverT {
         this.grid = grid;
     }
 
-    public ArrayList<Integer> possibleEntries(int i, int j) {
+    private ArrayList<Integer> possibleEntries(int i, int j) {
         ArrayList<Integer> possible = possibilities;
 
         //check horizontally
@@ -50,23 +49,42 @@ public class SolverT {
         return possible;
     }
 
-    public int[][] singleCandidate(int[][] board) {
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (possibleEntries(i, j).size() == 1) {
-                    board[i][j] = (Integer) possibleEntries(i, j).get(0);
-                }
-            }
+    public boolean singleCandidate(int x, int y) {
+        ArrayList<Integer> pos = possibleEntries(x, y);
+
+        if (pos.size() == 1) {
+            grid[x][y] = pos.get(0);
+            return true;
         }
-        return board;
+
+        return false;
     }
 
-    public void singlePosition(int i, int j) {
-        ArrayList<Integer> numbersInRow = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
-        for (int x = 0; x < 9; x++) {
-            if (grid[x][j] != 0)
-                numbersInRow.remove(Integer.valueOf(grid[x][j]));
+    public boolean singlePosition(int x, int y, int rowColRegion) {
+        if (rowColRegion == 1) {
+            for (int index = 0; index < 9; index++) {
+                if (grid[x][index] != 0) {
+                    if (singleCandidate(x, index))
+                        return true;
+                }
+            }
+        } else if (rowColRegion == 2) {
+            for (int index = 0; index < 9; index++) {
+                if (grid[index][y] != 0) {
+                    if (singleCandidate(index, y))
+                        return true;
+                }
+            }
+        } else {
+            ArrayList<Integer> nums = possibilities;
+            findRegion(x, y, possibilities);
+
+            if (nums.size() == 1) {
+                grid[x][y] = nums.get(0);
+                return true;
+            }
         }
+        return false;
     }
 
     public int[][] candidateLine(int[][] board, int i, int j) {

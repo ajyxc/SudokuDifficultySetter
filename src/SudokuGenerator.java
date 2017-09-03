@@ -280,21 +280,67 @@ public class SudokuGenerator {
         for (int x = 0; x < 9; x++) {
             int rowCount = 0;
             int colCount = 0;
+
             for (int y = 0; y < 9; y++) {
                 if (grid[x][y] == 0)
                     rowCount++;
                 if (grid[y][x] == 0)
                     colCount++;
             }
+
             if (rowCount == lowest || colCount == lowest)
                 lowestBoundExist = true;
 
             if (rowCount < lowest) {
-                
+                while (rowCount < lowest) {
+                    int r = new Random().nextInt(8);
+                    if (grid[x][r] == 0) {
+                        grid[x][r] = solution[x][r];
+                        rowCount++;
+                    }
+                }
+                lowestBoundExist = true;
             }
 
             if (colCount < lowest) {
+                while (colCount < lowest) {
+                    int r = new Random().nextInt(8);
+                    if (grid[r][x] == 0) {
+                        grid[r][x] = solution[r][x];
+                        colCount++;
+                    }
+                }
+                lowestBoundExist = true;
+            }
+        }
 
+        if (!lowestBoundExist) {
+            int randomRowOrColumn = new Random().nextInt(8);
+            int rowOrColumn = new Random().nextInt(1);
+            ArrayList<Integer> availibleIndexes = new ArrayList<>();
+
+            if (rowOrColumn == 0) {
+                for (int i = 0; i < 9; i++) {
+                    if (grid[randomRowOrColumn][i] != 0)
+                        availibleIndexes.add(i);
+                }
+                while (availibleIndexes.size() > lowest) {
+                    Collections.shuffle(availibleIndexes);
+                    int i = availibleIndexes.get(0);
+                    availibleIndexes.remove(0);
+                    grid[randomRowOrColumn][i] = 0;
+                }
+            } else {
+                for (int i = 0; i < 9; i++) {
+                    if (grid[i][randomRowOrColumn] != 0)
+                        availibleIndexes.add(i);
+                }
+                while (availibleIndexes.size() > lowest) {
+                    Collections.shuffle(availibleIndexes);
+                    int i = availibleIndexes.get(0);
+                    availibleIndexes.remove(0);
+                    grid[i][randomRowOrColumn] = 0;
+                }
             }
         }
     }

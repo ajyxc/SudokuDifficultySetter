@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 /**
  * Created by Dylan on 2017-08-03.
@@ -11,12 +12,37 @@ public class SudokuGenerator {
     private ArrayList<Integer> removed = new ArrayList<>();
     private ArrayList<Integer> remains = new ArrayList<>();
     private int[][] solution;
-    private int lowestBound;
 
-    public SudokuGenerator(int n) {
+    public SudokuGenerator(int level) {
         this.grid = generateGrid();
-        randomRemoval(n);
-        findLowestBound();
+
+        switch (level) {
+            case 1: {
+                int n = new Random().nextInt(30) + 20;
+                randomRemoval(n);
+                break;
+            }
+            case 2: {
+                int n = new Random().nextInt(13) + 32;
+                randomRemoval(n);
+                break;
+            }
+            case 3: {
+                int n = new Random().nextInt(3) + 46;
+                randomRemoval(n);
+                break;
+            }
+            case 4: {
+                int n = new Random().nextInt(3) + 50;
+                randomRemoval(n);
+                break;
+            }
+            case 5: {
+                int n = new Random().nextInt(4) + 54;
+                randomRemoval(n);
+                break;
+            }
+        }
     }
 
     /**
@@ -249,49 +275,32 @@ public class SudokuGenerator {
         }
     }
 
-    public int[][] getGrid() {
-        return this.grid;
-    }
-
-    public void setGrid(int[][] grid) {
-        this.grid = grid;
-        setRemovedAndRemains();
-    }
-
-    private void setRemovedAndRemains() {
-        for (int i = 0; i < 81; i++) {
-            int x = i % 9;
-            int y = i / 9;
-            ArrayList<Integer> nRemains = new ArrayList<>();
-            ArrayList<Integer> nRemoves = new ArrayList<>();
-
-            if (grid[x][y] != 0)
-                nRemains.add(i);
-            else
-                nRemoves.add(i);
-
-            this.remains = nRemains;
-            this.removed = nRemoves;
-        }
-    }
-
-    public void findLowestBound() {
-        int bound = 9;
+    public void lowestBoundGenerator(int lowest) {
+        boolean lowestBoundExist = false;
         for (int x = 0; x < 9; x++) {
-            int rowNum = 0;
-            int colNum = 0;
+            int rowCount = 0;
+            int colCount = 0;
             for (int y = 0; y < 9; y++) {
                 if (grid[x][y] == 0)
-                    rowNum++;
+                    rowCount++;
                 if (grid[y][x] == 0)
-                    colNum++;
+                    colCount++;
             }
-            int min = colNum < rowNum ? colNum : rowNum;
+            if (rowCount == lowest || colCount == lowest)
+                lowestBoundExist = true;
 
-            bound = min < bound ? min : bound;
+            if (rowCount < lowest) {
+                
+            }
+
+            if (colCount < lowest) {
+
+            }
         }
+    }
 
-        lowestBound = bound;
+    public int[][] getGrid() {
+        return this.grid;
     }
 
     public ArrayList<Integer> getRemoved() {

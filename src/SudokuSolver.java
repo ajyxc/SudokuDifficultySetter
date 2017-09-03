@@ -2,14 +2,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class SudokuSolver extends SudokuGenerator {
+public class SudokuSolver {
     private int enumerations;
     private int drafts;
     private ArrayList<Integer>[] storage = new ArrayList[9];
     private int[][] grid;
 
     public SudokuSolver(int[][] grid) {
-        this.grid = super.getGrid();
+        this.grid = grid;
     }
 
     public void numberOfDrafts() {

@@ -4,33 +4,35 @@ import java.util.ArrayList;
  * Created by apple on 2017-09-01.
  */
 public class SolverT {
-    ArrayList<Integer> possibilities = new ArrayList<Integer>();
+    private ArrayList<Integer> possibilities = new ArrayList<Integer>();
+    private ArrayList<Integer>[][] draftGrid = new ArrayList[9][9];
+    private int[][] grid;
 
-    SolverT() {
+    SolverT(int[][] grid) {
         for (int i = 1; i < 10; i++) {
             possibilities.add(i);
         }
+        this.grid = grid;
     }
 
     public static void main(String[] args) {
 
     }
 
-    public ArrayList<Integer> possibleEntries(int[][] board, int i, int j) {
+    public ArrayList<Integer> possibleEntries(int i, int j) {
         ArrayList<Integer> possible = possibilities;
-
 
         //check horizontally
         for (int a = 0; a < 9; a++) {
-            if (board[i][a] != 0) {
-                possible.remove(Integer.valueOf(board[i][a]));
+            if (grid[i][a] != 0) {
+                possible.remove(Integer.valueOf(grid[i][a]));
             }
         }
 
         //check vertically
         for (int a = 0; a < 9; a++) {
-            if (board[a][j] != 0) {
-                possible.remove(Integer.valueOf(board[a][j]));
+            if (grid[a][j] != 0) {
+                possible.remove(Integer.valueOf(grid[a][j]));
             }
         }
 
@@ -40,11 +42,13 @@ public class SolverT {
 
         for (int x = row * 3; x < row * 3 + 3; x++) {
             for (int y = col * 3; y < col * 3 + 3; y++) {
-                if (board[x][y] != 0) {
-                    possible.remove(Integer.valueOf(board[x][y]));
+                if (grid[x][y] != 0) {
+                    possible.remove(Integer.valueOf(grid[x][y]));
                 }
             }
         }
+
+        draftGrid[i][j] = possible;
 
         return possible;
     }
@@ -52,8 +56,8 @@ public class SolverT {
     public int[][] singleCandidate(int[][] board) {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if (possibleEntries(board, i, j).size() == 1) {
-                    board[i][j] = (Integer) possibleEntries(board, i, j).get(0);
+                if (possibleEntries(i, j).size() == 1) {
+                    board[i][j] = (Integer) possibleEntries(i, j).get(0);
                 }
             }
         }
@@ -63,7 +67,7 @@ public class SolverT {
     public int[][] singlePosition(int[][] board, int i, int j) {
         int row = (int) i / 3;
         int col = (int) j / 3;
-        for (int a : possibleEntries(board, i, j)) {
+        for (int a : possibleEntries(i, j)) {
             for (int y = 3 * row; y < 3 * row + 3; y++) {
                 //for (int x = 0) ;
             }
@@ -74,13 +78,13 @@ public class SolverT {
 
     public int[][] candidateLine(int[][] board, int i, int j) {
         //2 grid with only 2 same drafts
-        if (possibleEntries(board, i, j).size() == 2) {
+        if (possibleEntries(i, j).size() == 2) {
             //check that row
             int temp = 0;
             boolean found = false;
             for (int a = 0; a < 9; a++) {
                 //if find another grid has exactly same draft as the given one,
-                if (compareArrayList(possibleEntries(board, i, j), possibleEntries(board, i, a)) && a != j) {
+                if (compareArrayList(possibleEntries(i, j), possibleEntries(i, a)) && a != j) {
                     temp = a;
                     found = true;
                     break;
@@ -89,16 +93,16 @@ public class SolverT {
 
             // if found, get rid of these draft from this line
             if (found) {
-                int l = possibleEntries(board, i, j).get(0);
-                int k = possibleEntries(board, i, j).get(1);
+                int l = possibleEntries(i, j).get(0);
+                int k = possibleEntries(i, j).get(1);
                 for (int a = 0; a < 9; a++) {
                     if (a != temp && a != j) {
-                        ArrayList<Integer> drafts = possibleEntries(board, i, a);
+                        ArrayList<Integer> drafts = possibleEntries(i, a);
                         if (drafts.contains(l)) {
-                            possibleEntries(board, i, a).remove(l);
+                            possibleEntries(i, a).remove(l);
                         }
                         if (drafts.contains(k)) {
-                            possibleEntries(board, i, a).remove(k);
+                            possibleEntries(i, a).remove(k);
                         }
                     }
                 }
@@ -109,7 +113,7 @@ public class SolverT {
             boolean foundl = false;
             for (int a = 0; a < 9; a++) {
                 //if find another grid has exactly same draft as the given one,
-                if (compareArrayList(possibleEntries(board, a, j), possibleEntries(board, i, j)) && a != i) {
+                if (compareArrayList(possibleEntries(a, j), possibleEntries(i, j)) && a != i) {
                     templ = a;
                     foundl = true;
                     break;
@@ -118,16 +122,16 @@ public class SolverT {
 
             // if found, get rid of these draft from this line
             if (foundl) {
-                int l = possibleEntries(board, i, j).get(0);
-                int k = possibleEntries(board, i, j).get(1);
+                int l = possibleEntries(i, j).get(0);
+                int k = possibleEntries(i, j).get(1);
                 for (int a = 0; a < 9; a++) {
                     if (a != templ && a != i) {
-                        ArrayList<Integer> drafts = possibleEntries(board, a, j);
+                        ArrayList<Integer> drafts = possibleEntries(a, j);
                         if (drafts.contains(l)) {
-                            possibleEntries(board, a, j).remove(l);
+                            possibleEntries(a, j).remove(l);
                         }
                         if (drafts.contains(k)) {
-                            possibleEntries(board, a, j).remove(k);
+                            possibleEntries(a, j).remove(k);
                         }
                     }
                 }
@@ -141,7 +145,7 @@ public class SolverT {
             int tempr = 0,tempc = 0;
             for(int x = row*3; x < row*3+3; x++){
                 for(int y = col*3; y < col*3+3; y++ ){
-                    if(compareArrayList(possibleEntries(board,i,j),possibleEntries(board,x,y))){
+                    if (compareArrayList(possibleEntries(i, j), possibleEntries(x, y))) {
                         foundr = true;
                         tempr = x;
                         tempc = y;
@@ -152,18 +156,18 @@ public class SolverT {
             // if found, get rid of these draft from this region
             //from line if possible
             if(foundr){
-                int l = possibleEntries(board, i, j).get(0);
-                int k = possibleEntries(board, i, j).get(1);
+                int l = possibleEntries(i, j).get(0);
+                int k = possibleEntries(i, j).get(1);
                 //get rid of these draft from the region
                 for(int x = row*3; x < row*3+3; x++) {
                     for(int y = col*3; y < col*3+3; y++ ){
                         if (x != tempr && y != tempc && x!=i && y!= j) {
-                            ArrayList<Integer> drafts = possibleEntries(board, x, y);
+                            ArrayList<Integer> drafts = possibleEntries(x, y);
                             if (drafts.contains(l)) {
-                                possibleEntries(board, x, y).remove(l);
+                                possibleEntries(x, y).remove(l);
                             }
                             if (drafts.contains(k)) {
-                                possibleEntries(board, x, y).remove(k);
+                                possibleEntries(x, y).remove(k);
                             }
                         }
                     }
@@ -173,12 +177,12 @@ public class SolverT {
                 if(tempr == i){
                     for(int x =0; x<9; x++){
                         if (x != tempr && x != j) {
-                            ArrayList<Integer> drafts = possibleEntries(board, i, x);
+                            ArrayList<Integer> drafts = possibleEntries(i, x);
                             if (drafts.contains(l)) {
-                                possibleEntries(board, i, x).remove(l);
+                                possibleEntries(i, x).remove(l);
                             }
                             if (drafts.contains(k)) {
-                                possibleEntries(board, i, x).remove(k);
+                                possibleEntries(i, x).remove(k);
                             }
                         }
                     }
@@ -187,12 +191,12 @@ public class SolverT {
                 if(tempc == j){
                     for (int a = 0; a < 9; a++) {
                         if (a != tempc && a != i) {
-                            ArrayList<Integer> drafts = possibleEntries(board, a, j);
+                            ArrayList<Integer> drafts = possibleEntries(a, j);
                             if (drafts.contains(l)) {
-                                possibleEntries(board, a, j).remove(l);
+                                possibleEntries(a, j).remove(l);
                             }
                             if (drafts.contains(k)) {
-                                possibleEntries(board, a, j).remove(k);
+                                possibleEntries(a, j).remove(k);
                             }
                         }
                     }

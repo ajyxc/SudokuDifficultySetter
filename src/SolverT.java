@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by apple on 2017-09-01.
@@ -60,16 +61,12 @@ public class SolverT {
         return board;
     }
 
-    public int[][] singlePosition(int[][] board, int i, int j) {
-        int row = (int) i / 3;
-        int col = (int) j / 3;
-        for (int a : possibleEntries(i, j)) {
-            for (int y = 3 * row; y < 3 * row + 3; y++) {
-                //for (int x = 0) ;
-            }
-
+    public void singlePosition(int i, int j) {
+        ArrayList<Integer> numbersInRow = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        for (int x = 0; x < 9; x++) {
+            if (grid[x][j] != 0)
+                numbersInRow.remove(Integer.valueOf(grid[x][j]));
         }
-        return board;
     }
 
     public int[][] candidateLine(int[][] board, int i, int j) {
@@ -214,5 +211,85 @@ public class SolverT {
             }
         }
         return true;
+    }
+
+    private void findRegion(int xPos, int yPos, ArrayList<Integer> a) {
+        int box_Y = yPos / 3;
+        int box_X = xPos / 3;
+
+        switch (box_X + 3 * box_Y + 1) {
+            case 1: {
+                for (int x = 0; x < 3; x++) {
+                    for (int y = 0; y < 3; y++) {
+                        a.remove(Integer.valueOf(grid[x][y]));
+                    }
+                }
+                break;
+            }
+            case 2: {
+                for (int x = 3; x < 6; x++) {
+                    for (int y = 0; y < 3; y++) {
+                        a.remove(Integer.valueOf(grid[x][y]));
+                    }
+                }
+                break;
+            }
+            case 3: {
+                for (int x = 6; x < 9; x++) {
+                    for (int y = 0; y <= 18; y += 9) {
+                        a.remove(Integer.valueOf(grid[x][y]));
+                    }
+                }
+                break;
+            }
+            case 4: {
+                for (int x = 0; x < 3; x++) {
+                    for (int y = 27; y <= (9 * 2) + 27; y += 9) {
+                        a.remove(Integer.valueOf(grid[x][y]));
+                    }
+                }
+                break;
+            }
+            case 5: {
+                for (int x = 3; x < 6; x++) {
+                    for (int y = 27; y <= (9 * 2) + 27; y += 9) {
+                        a.remove(Integer.valueOf(grid[x][y]));
+                    }
+                }
+                break;
+            }
+            case 6: {
+                for (int x = 6; x < 9; x++) {
+                    for (int y = 27; y <= 27 + (9 * 2); y += 9) {
+                        a.remove(Integer.valueOf(grid[x][y]));
+                    }
+                }
+                break;
+            }
+            case 7: {
+                for (int x = 0; x < 3; x++) {
+                    for (int y = 54; y <= 54 + 9 * 2; y += 9) {
+                        a.remove(Integer.valueOf(grid[x][y]));
+                    }
+                }
+                break;
+            }
+            case 8: {
+                for (int x = 3; x < 6; x++) {
+                    for (int y = 54; y <= 54 + (9 * 2); y += 9) {
+                        a.remove(Integer.valueOf(grid[x][y]));
+                    }
+                }
+                break;
+            }
+            case 9: {
+                for (int x = 6; x < 9; x++) {
+                    for (int y = 54; y <= 54 + (9 * 2); y += 9) {
+                        a.remove(Integer.valueOf(grid[x][y]));
+                    }
+                }
+                break;
+            }
+        }
     }
 }

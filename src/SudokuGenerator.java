@@ -11,10 +11,12 @@ public class SudokuGenerator {
     private ArrayList<Integer> removed = new ArrayList<>();
     private ArrayList<Integer> remains = new ArrayList<>();
     private int[][] solution;
+    private int lowestBound;
 
     public SudokuGenerator(int n) {
         this.grid = generateGrid();
         randomRemoval(n);
+        findLowestBound();
     }
 
     /**
@@ -271,6 +273,25 @@ public class SudokuGenerator {
             this.remains = nRemains;
             this.removed = nRemoves;
         }
+    }
+
+    public void findLowestBound() {
+        int bound = 9;
+        for (int x = 0; x < 9; x++) {
+            int rowNum = 0;
+            int colNum = 0;
+            for (int y = 0; y < 9; y++) {
+                if (grid[x][y] == 0)
+                    rowNum++;
+                if (grid[y][x] == 0)
+                    colNum++;
+            }
+            int min = colNum < rowNum ? colNum : rowNum;
+
+            bound = min < bound ? min : bound;
+        }
+
+        lowestBound = bound;
     }
 
     public ArrayList<Integer> getRemoved() {

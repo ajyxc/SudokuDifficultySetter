@@ -65,10 +65,11 @@ public class SolverT {
         int col = (int) j / 3;
         for (int a : possibleEntries(board, i, j)) {
             for (int y = 3 * row; y < 3 * row + 3; y++) {
-                for (int x = 0) ;
+                //for (int x = 0) ;
             }
 
         }
+        return board;
     }
 
     public int[][] candidateLine(int[][] board, int i, int j) {
@@ -132,7 +133,7 @@ public class SolverT {
                 }
             }
 
-            //check that region
+
             //check that region
             boolean foundr = false;
             int row = (int)i/3;
@@ -149,9 +150,11 @@ public class SolverT {
                 }
             }
             // if found, get rid of these draft from this region
+            //from line if possible
             if(foundr){
                 int l = possibleEntries(board, i, j).get(0);
                 int k = possibleEntries(board, i, j).get(1);
+                //get rid of these draft from the region
                 for(int x = row*3; x < row*3+3; x++) {
                     for(int y = col*3; y < col*3+3; y++ ){
                         if (x != tempr && y != tempc && x!=i && y!= j) {
@@ -165,9 +168,39 @@ public class SolverT {
                         }
                     }
                 }
+                //get rid of these draft from the line if possible
+                //from the horizontal line
+                if(tempr == i){
+                    for(int x =0; x<9; x++){
+                        if (x != tempr && x != j) {
+                            ArrayList<Integer> drafts = possibleEntries(board, i, x);
+                            if (drafts.contains(l)) {
+                                possibleEntries(board, i, x).remove(l);
+                            }
+                            if (drafts.contains(k)) {
+                                possibleEntries(board, i, x).remove(k);
+                            }
+                        }
+                    }
+                }
+                //from the vertical line
+                if(tempc == j){
+                    for (int a = 0; a < 9; a++) {
+                        if (a != tempc && a != i) {
+                            ArrayList<Integer> drafts = possibleEntries(board, a, j);
+                            if (drafts.contains(l)) {
+                                possibleEntries(board, a, j).remove(l);
+                            }
+                            if (drafts.contains(k)) {
+                                possibleEntries(board, a, j).remove(k);
+                            }
+                        }
+                    }
+                }
             }
 
         }
+        return board;
     }
 
     public boolean compareArrayList(ArrayList<Integer> a, ArrayList<Integer> b) {

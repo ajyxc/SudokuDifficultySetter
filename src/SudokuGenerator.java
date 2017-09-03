@@ -12,8 +12,9 @@ public class SudokuGenerator {
     private ArrayList<Integer> remains = new ArrayList<>();
     private int[][] solution;
 
-    public SudokuGenerator() {
+    public SudokuGenerator(int n) {
         this.grid = generateGrid();
+        randomRemoval(n);
     }
 
     /**
@@ -229,7 +230,7 @@ public class SudokuGenerator {
         return converted;
     }
 
-    public void randomRemoval(int n) {
+    private void randomRemoval(int n) {
         while (n != 0) {
             Collections.shuffle(remains);
             int index = remains.get(0);
@@ -246,15 +247,37 @@ public class SudokuGenerator {
         }
     }
 
-    protected int[][] getGrid() {
+    public int[][] getGrid() {
         return this.grid;
     }
 
-    protected ArrayList<Integer> getRemoved() {
+    public void setGrid(int[][] grid) {
+        this.grid = grid;
+        setRemovedAndRemains();
+    }
+
+    private void setRemovedAndRemains() {
+        for (int i = 0; i < 81; i++) {
+            int x = i % 9;
+            int y = i / 9;
+            ArrayList<Integer> nRemains = new ArrayList<>();
+            ArrayList<Integer> nRemoves = new ArrayList<>();
+
+            if (grid[x][y] != 0)
+                nRemains.add(i);
+            else
+                nRemoves.add(i);
+
+            this.remains = nRemains;
+            this.removed = nRemoves;
+        }
+    }
+
+    public ArrayList<Integer> getRemoved() {
         return this.removed;
     }
 
-    protected ArrayList<Integer> getRemains() {
+    public ArrayList<Integer> getRemains() {
         return this.remains;
     }
 }

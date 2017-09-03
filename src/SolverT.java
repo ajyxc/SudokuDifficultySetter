@@ -15,10 +15,6 @@ public class SolverT {
         this.grid = grid;
     }
 
-    public static void main(String[] args) {
-
-    }
-
     public ArrayList<Integer> possibleEntries(int i, int j) {
         ArrayList<Integer> possible = possibilities;
 

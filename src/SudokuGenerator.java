@@ -21,7 +21,7 @@ public class SudokuGenerator {
     public SudokuGenerator() {
         this.grid = generateGrid();
         for (int i = 0; i < 9; i++) {
-            storage[i] = new ArrayList<Integer>();
+            storage[i] = new ArrayList<Integer>();//
         }
     }
 

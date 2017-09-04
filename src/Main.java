@@ -17,7 +17,6 @@ public class Main {
             int n = new Random().nextInt(5) + 1;
             SudokuGenerator test = new SudokuGenerator(n);
             SudokuSolver soln = new SudokuSolver(test.getGrid());
-            soln.solveSudoku();
             switch (n) {
                 case 1: {
                     if (soln.getEnumerations() < 100) {

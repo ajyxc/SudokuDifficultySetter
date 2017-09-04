@@ -25,31 +25,31 @@ public class SudokuGenerator {
 
         switch (level) {
             case 1: {
-                int n = new Random().nextInt(31) + 20;
+                int n = new Random().nextInt(12) + 20;
                 randomRemoval(n);
                 lowestBoundGenerator(5);
                 break;
             }
             case 2: {
-                int n = new Random().nextInt(14) + 32;
+                int n = new Random().nextInt(14) + 34;
                 randomRemoval(n);
                 lowestBoundGenerator(4);
                 break;
             }
             case 3: {
-                int n = new Random().nextInt(4) + 46;
+                int n = new Random().nextInt(4) + 48;
                 randomRemoval(n);
                 lowestBoundGenerator(3);
                 break;
             }
             case 4: {
-                int n = new Random().nextInt(4) + 50;
+                int n = new Random().nextInt(4) + 52;
                 randomRemoval(n);
                 lowestBoundGenerator(2);
                 break;
             }
             case 5: {
-                int n = new Random().nextInt(5) + 54;
+                int n = new Random().nextInt(5) + 56;
                 randomRemoval(n);
                 lowestBoundGenerator(0);
                 break;
@@ -253,7 +253,7 @@ public class SudokuGenerator {
 
         this.solution = convertTo2D(grid);
 
-        return this.solution;
+        return solution.clone();
     }
 
     private int[][] convertTo2D(int[] grid) {
@@ -284,106 +284,127 @@ public class SudokuGenerator {
     }
 
     private void lowestBoundGenerator(int lowest) {
-        boolean lowestBoundExist = false;
+        boolean lowestBoundMet = false;
         for (int x = 0; x < 9; x++) {
-            int rowCount = 0;
-            int colCount = 0;
             ArrayList<Integer> rowHolder = new ArrayList<>();
             ArrayList<Integer> colHolder = new ArrayList<>();
 
             for (int y = 0; y < 9; y++) {
                 if (grid[x][y] == 0) {
-                    rowCount++;
                     rowHolder.add(y);
                 }
                 if (grid[y][x] == 0) {
-                    colCount++;
                     colHolder.add(y);
                 }
-            }
 
-            if (rowCount == lowest || colCount == lowest)
-                lowestBoundExist = true;
+                if (9 - rowHolder.size() < lowest) {
+                    while (9 - rowHolder.size() < lowest) {
+                        Collections.shuffle(rowHolder);
+                        int i = rowHolder.get(0);
+                        rowHolder.remove(0);
+                        grid[x][i] = solution[x][i];
+                        boolean quotaMet = false;
 
-            if (9 - rowCount < lowest) {
-                while (rowCount < lowest) {
-                    Collections.shuffle(rowHolder);
-                    int r = rowHolder.get(0);
-                    rowHolder.remove(0);
-                    grid[x][r] = solution[x][r];
-                    addToRemains(r * 9 + x);
-                    rowCount++;
-                }
-                lowestBoundExist = true;
-            }
+                        while (!quotaMet) {
+                            Collections.shuffle(remains);
+                            int index = remains.get(0);
+                            int xP = index % 9;
+                            int yP = index / 9;
 
-            if (9 - colCount < lowest) {
-                while (colCount < lowest) {
-                    Collections.shuffle(colHolder);
-                    int r = colHolder.get(0);
-                    colHolder.remove(0);
-                    grid[r][x] = solution[r][x];
-                    addToRemains(x * 9 + r);
-                    colCount++;
+                            if (xP != x && yP != i) {
+                                grid[xP][yP] = 0;
+                                addToRemoved(yP * 9 + xP);
+                                quotaMet = true;
+                            }
+                        }
+                        addToRemains(i * 9 + x);
                     }
+                    lowestBoundMet = true;
+                } else if (9 - colHolder.size() < lowest) {
+                    while (9 - colHolder.size() < lowest) {
+                        Collections.shuffle(colHolder);
+                        int i = colHolder.get(0);
+                        colHolder.remove(0);
+                        grid[i][x] = solution[i][x];
+                        boolean quotaMet = false;
+
+                        while (!quotaMet) {
+                            Collections.shuffle(remains);
+                            int index = remains.get(0);
+                            int xP = index % 9;
+                            int yP = index / 9;
+
+                            if (xP != i && yP != x) {
+                                grid[xP][yP] = 0;
+                                addToRemoved(yP * 9 + xP);
+                                quotaMet = true;
+                            }
+                        }
+                        addToRemains(i * 9 + x);
+                    }
+                    lowestBoundMet = true;
                 }
-                lowestBoundExist = true;
+            }
         }
 
-        if (!lowestBoundExist) {
-            int randomRowOrColumn = new Random().nextInt(9);
+        if (!lowestBoundMet) {
+            int index = new Random().nextInt(9);
             int rowOrColumn = new Random().nextInt(2);
-            ArrayList<Integer> availibleIndexes = new ArrayList<>();
-            int count = 0;
+            ArrayList<Integer> availible = new ArrayList<>();
 
             if (rowOrColumn == 0) {
                 for (int i = 0; i < 9; i++) {
-                    if (grid[randomRowOrColumn][i] != 0)
-                        availibleIndexes.add(i);
-                }
-                while (availibleIndexes.size() > lowest) {
-                    Collections.shuffle(availibleIndexes);
-                    int i = availibleIndexes.get(0);
-                    availibleIndexes.remove(0);
-                    grid[randomRowOrColumn][i] = 0;
-                    addToRemoved(i * 9 + randomRowOrColumn);
-                    count++;
+                    if (grid[index][i] != 0)
+                        availible.add(i);
                 }
 
-                while (count != 0) {
-                    Collections.shuffle(removed);
-                    int i = removed.get(0);
-                    int x = i % 9;
-                    if (x != randomRowOrColumn) {
-                        int y = i / 9;
-                        grid[x][y] = solution[x][y];
-                        addToRemains(i);
-                        count--;
+                while (9 - availible.size() < lowest) {
+                    Collections.shuffle(availible);
+                    int i = availible.get(0);
+                    availible.remove(0);
+                    grid[index][i] = solution[index][i];
+                    boolean quotaMet = false;
+
+                    while (!quotaMet) {
+                        Collections.shuffle(remains);
+                        int p = remains.get(0);
+                        int xP = p % 9;
+                        int yP = p / 9;
+
+                        if (xP != index && yP != i) {
+                            grid[xP][yP] = 0;
+                            addToRemoved(yP * 9 + xP);
+                            quotaMet = true;
+                        }
                     }
+                    addToRemains(i * 9 + index);
                 }
             } else {
                 for (int i = 0; i < 9; i++) {
-                    if (grid[i][randomRowOrColumn] != 0)
-                        availibleIndexes.add(i);
+                    if (grid[i][index] != 0)
+                        availible.add(i);
                 }
-                while (availibleIndexes.size() > lowest) {
-                    Collections.shuffle(availibleIndexes);
-                    int i = availibleIndexes.get(0);
-                    availibleIndexes.remove(0);
-                    grid[i][randomRowOrColumn] = 0;
-                    addToRemoved(randomRowOrColumn * 9 + i);
-                    count++;
-                }
-                while (count != 0) {
-                    Collections.shuffle(removed);
-                    int i = removed.get(0);
-                    int y = i / 9;
-                    if (y != randomRowOrColumn) {
-                        int x = i % 9;
-                        grid[x][y] = solution[x][y];
-                        addToRemoved(y * 9 + x);
-                        count--;
+
+                while (9 - availible.size() < lowest) {
+                    Collections.shuffle(availible);
+                    int i = availible.get(0);
+                    availible.remove(0);
+                    grid[i][index] = solution[i][index];
+                    boolean quotaMet = false;
+
+                    while (!quotaMet) {
+                        Collections.shuffle(remains);
+                        int p = remains.get(0);
+                        int xP = p % 9;
+                        int yP = p / 9;
+
+                        if (xP != i && yP != index) {
+                            grid[xP][yP] = 0;
+                            addToRemoved(yP * 9 + xP);
+                            quotaMet = true;
+                        }
                     }
+                    addToRemains(index * 9 + i);
                 }
             }
         }

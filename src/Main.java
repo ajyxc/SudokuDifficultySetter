@@ -2,12 +2,12 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        SudokuGenerator test = new SudokuGenerator();
-        int n = new Random().nextInt(59);
-        test.randomRemoval(n);
-        test.getDraftLocations();
-        test.printStore();
-        printGrid(test.getGrid());
+        for (int i = 0; i < 100; i++) {
+            int n = new Random().nextInt(4) + 1;
+            SudokuGenerator test = new SudokuGenerator(n);
+            SudokuSolver soln = new SudokuSolver(test.getGrid());
+            System.out.println(soln.getEnumerations());
+        }
     }
 
     public static void printGrid(int[][] grid) {

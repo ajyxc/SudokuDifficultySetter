@@ -20,26 +20,31 @@ public class SudokuGenerator {
             case 1: {
                 int n = new Random().nextInt(30) + 20;
                 randomRemoval(n);
+                lowestBoundGenerator(5);
                 break;
             }
             case 2: {
                 int n = new Random().nextInt(13) + 32;
                 randomRemoval(n);
+                lowestBoundGenerator(4);
                 break;
             }
             case 3: {
                 int n = new Random().nextInt(3) + 46;
                 randomRemoval(n);
+                lowestBoundGenerator(3);
                 break;
             }
             case 4: {
                 int n = new Random().nextInt(3) + 50;
                 randomRemoval(n);
+                lowestBoundGenerator(2);
                 break;
             }
             case 5: {
                 int n = new Random().nextInt(4) + 54;
                 randomRemoval(n);
+                lowestBoundGenerator(0);
                 break;
             }
         }

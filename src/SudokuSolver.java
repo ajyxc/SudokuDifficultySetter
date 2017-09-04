@@ -247,17 +247,21 @@ public class SudokuSolver {
                         if (numberChecker.contains(this.grid[x][index]))
                             numberChecker.remove(numberChecker.indexOf(this.grid[x][index]));
                     }
+
                     if (this.grid[index][y] != 0) {
                         if (numberChecker.contains(this.grid[index][y]))
                             numberChecker.remove(numberChecker.indexOf(this.grid[index][y]));
                     }
+
                     int xPos = region.get(index) % 9;
                     int yPos = region.get(index) / 9;
+
                     if (this.grid[xPos][yPos] != 0) {
                         if (numberChecker.contains(this.grid[xPos][yPos]))
                             numberChecker.remove(numberChecker.indexOf(this.grid[xPos][yPos]));
                     }
                 }
+
                 for (int index = 0; index < numberChecker.size(); index++) {
                     if (!storage[numberChecker.get(index) - 1].contains(i))
                         storage[numberChecker.get(index) - 1].add(i);

@@ -19,7 +19,42 @@ public class SudokuGenerator {
 
         this.grid = generateGrid();
 
+        for (int i = 0; i < 81; i++) {
+            remains.add(i);
+        }
 
+        switch (level) {
+            case 1: {
+                int n = new Random().nextInt(31) + 20;
+                randomRemoval(n);
+                lowestBoundGenerator(5);
+                break;
+            }
+            case 2: {
+                int n = new Random().nextInt(14) + 32;
+                randomRemoval(n);
+                lowestBoundGenerator(4);
+                break;
+            }
+            case 3: {
+                int n = new Random().nextInt(4) + 46;
+                randomRemoval(n);
+                lowestBoundGenerator(3);
+                break;
+            }
+            case 4: {
+                int n = new Random().nextInt(4) + 50;
+                randomRemoval(n);
+                lowestBoundGenerator(2);
+                break;
+            }
+            case 5: {
+                int n = new Random().nextInt(5) + 54;
+                randomRemoval(n);
+                lowestBoundGenerator(0);
+                break;
+            }
+        }
     }
 
     /**
@@ -216,9 +251,6 @@ public class SudokuGenerator {
 
         if (!isPerfect(grid)) throw new RuntimeException("ERROR: Imperfect grid generated.");
 
-        for (int i = 0; i < 81; i++)
-            remains.add(i);
-
         this.solution = convertTo2D(grid);
 
         return this.solution;
@@ -239,14 +271,13 @@ public class SudokuGenerator {
         while (n != 0) {
             Collections.shuffle(remains);
             int index = remains.get(0);
-            this.remains.remove(0);
 
             int x = index % 9;
             int y = index / 9;
 
             if (grid[x][y] != 0) {
                 this.grid[x][y] = 0;
-                this.removed.add(index);
+                addToRemoved(index);
                 n--;
             }
         }
@@ -257,43 +288,51 @@ public class SudokuGenerator {
         for (int x = 0; x < 9; x++) {
             int rowCount = 0;
             int colCount = 0;
+            ArrayList<Integer> rowHolder = new ArrayList<>();
+            ArrayList<Integer> colHolder = new ArrayList<>();
 
             for (int y = 0; y < 9; y++) {
-                if (grid[x][y] == 0)
+                if (grid[x][y] == 0) {
                     rowCount++;
-                if (grid[y][x] == 0)
+                    rowHolder.add(y);
+                }
+                if (grid[y][x] == 0) {
                     colCount++;
+                    colHolder.add(y);
+                }
             }
 
             if (rowCount == lowest || colCount == lowest)
                 lowestBoundExist = true;
 
-            if (rowCount < lowest) {
+            if (9 - rowCount < lowest) {
                 while (rowCount < lowest) {
-                    int r = new Random().nextInt(8);
-                    if (grid[x][r] == 0) {
-                        grid[x][r] = solution[x][r];
-                        rowCount++;
-                    }
+                    Collections.shuffle(rowHolder);
+                    int r = rowHolder.get(0);
+                    rowHolder.remove(0);
+                    grid[x][r] = solution[x][r];
+                    addToRemains(r * 9 + x);
+                    rowCount++;
                 }
                 lowestBoundExist = true;
             }
 
-            if (colCount < lowest) {
+            if (9 - colCount < lowest) {
                 while (colCount < lowest) {
-                    int r = new Random().nextInt(8);
-                    if (grid[r][x] == 0) {
-                        grid[r][x] = solution[r][x];
-                        colCount++;
+                    Collections.shuffle(colHolder);
+                    int r = colHolder.get(0);
+                    colHolder.remove(0);
+                    grid[r][x] = solution[r][x];
+                    addToRemains(x * 9 + r);
+                    colCount++;
                     }
                 }
                 lowestBoundExist = true;
-            }
         }
 
         if (!lowestBoundExist) {
-            int randomRowOrColumn = new Random().nextInt(8);
-            int rowOrColumn = new Random().nextInt(1);
+            int randomRowOrColumn = new Random().nextInt(9);
+            int rowOrColumn = new Random().nextInt(2);
             ArrayList<Integer> availibleIndexes = new ArrayList<>();
             int count = 0;
 
@@ -307,8 +346,7 @@ public class SudokuGenerator {
                     int i = availibleIndexes.get(0);
                     availibleIndexes.remove(0);
                     grid[randomRowOrColumn][i] = 0;
-                    remains.remove(Integer.valueOf(i * 9 + randomRowOrColumn));
-                    removed.add(Integer.valueOf(i * 9 + randomRowOrColumn));
+                    addToRemoved(i * 9 + randomRowOrColumn);
                     count++;
                 }
 
@@ -319,7 +357,7 @@ public class SudokuGenerator {
                     if (x != randomRowOrColumn) {
                         int y = i / 9;
                         grid[x][y] = solution[x][y];
-                        remains.add(i);
+                        addToRemains(i);
                         count--;
                     }
                 }
@@ -333,8 +371,7 @@ public class SudokuGenerator {
                     int i = availibleIndexes.get(0);
                     availibleIndexes.remove(0);
                     grid[i][randomRowOrColumn] = 0;
-                    remains.remove(Integer.valueOf(randomRowOrColumn * 9 + i));
-                    removed.add(Integer.valueOf(randomRowOrColumn * 9 + i));
+                    addToRemoved(randomRowOrColumn * 9 + i);
                     count++;
                 }
                 while (count != 0) {
@@ -344,7 +381,7 @@ public class SudokuGenerator {
                     if (y != randomRowOrColumn) {
                         int x = i % 9;
                         grid[x][y] = solution[x][y];
-                        remains.add(i);
+                        addToRemoved(y * 9 + x);
                         count--;
                     }
                 }
@@ -354,6 +391,16 @@ public class SudokuGenerator {
 
     public int[][] getGrid() {
         return this.grid;
+    }
+
+    public void addToRemains(int i) {
+        remains.add(Integer.valueOf(i));
+        removed.remove(Integer.valueOf(i));
+    }
+
+    public void addToRemoved(int i) {
+        removed.add(Integer.valueOf(i));
+        remains.remove(Integer.valueOf(i));
     }
 
     public ArrayList<Integer> getRemoved() {

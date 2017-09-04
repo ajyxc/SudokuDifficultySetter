@@ -10,6 +10,7 @@ public class SudokuSolver {
 
     public SudokuSolver(int[][] grid) {
         this.grid = grid;
+        this.enumerations = 0;
     }
 
     public void numberOfDrafts() {
@@ -51,16 +52,7 @@ public class SudokuSolver {
     }
 
     public void solveSudoku() {
-        int[][] temp = new int[9][9];
-        for (int x = 0; x < 9; x++) {
-            for (int y = 0; y < 9; y++) {
-                temp[x][y] = this.grid[x][y];
-            }
-        }
-
-        this.enumerations = 0;
-
-        solve(temp);
+        solve(this.grid);
     }
 
     private boolean solve(int[][] board) {
@@ -83,7 +75,7 @@ public class SudokuSolver {
                         continue;
 
                     board[i][j] = k;
-                    this.enumerations += 1;
+                    this.enumerations++;
                     if (isValid(board, i, j) && solve(board)) {
                         return true;
                     }
@@ -271,10 +263,14 @@ public class SudokuSolver {
     }
 
     public int getEnumerations() {
-        return enumerations;
+        return this.enumerations;
     }
 
     public int getDrafts() {
         return drafts;
+    }
+
+    public int[][] getGrid() {
+        return this.grid;
     }
 }

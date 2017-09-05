@@ -220,6 +220,7 @@ public class SolverT {
         return board;
     }
 
+    //todo:fix parameter and return type
     public int[][] multipleLine(int[][] board) {
         //check region horizontally,check1,2,3; 4,5,6; 7,8,9
         //check1,2,3
@@ -265,6 +266,7 @@ public class SolverT {
             int m2 = (3 * m + 3) % 9;
             int m3 = (3 * m + 6) % 9;
 
+            int c = getc(a, b);
 
             boolean region1row12 = false;
             Set<Integer> samedraft = new HashSet<Integer>();
@@ -273,7 +275,7 @@ public class SolverT {
                 //check row 1,2
                 for (int j : draftGrid[i][a]) {
                     for (int k = m1; k < m1+3; k++) {
-                        if (draftGrid[k][b].contains(j)) {
+                        if (draftGrid[k][b].contains(j) && !draftGrid[k][c].contains(j)) {
                             samedraft.add(j);
                             region1row12 = true;
                         }
@@ -288,7 +290,7 @@ public class SolverT {
                 for (int i = m2; i < m2+3; i++) {
                     for (int j : draftGrid[i][a]) {
                         for (int k = m2; k < m2+3; k++) {
-                            if (draftGrid[k][b].contains(j) && samedraft.contains(j)) {
+                            if (draftGrid[k][b].contains(j) && samedraft.contains(j) && !draftGrid[c][k].contains(j)) {
                                 samedraft1.add(j);
                                 region2row12 = true;
                             }
@@ -299,7 +301,7 @@ public class SolverT {
 
             boolean region3row3 = false;
             Set<Integer> samedraft2 = new HashSet<Integer>();
-            int c = getc(a, b);
+
             if (region2row12) {
                 for (int j = m3; j < m3+3; j++) {
                     for (int l : draftGrid[j][c]) {
@@ -353,7 +355,7 @@ public class SolverT {
 
             boolean region1row12 = false;
             Set<Integer> samedraft = new HashSet<Integer>();
-            //todo: to make sure row c does not have this
+
             for (int i = m1; i < m1 + 3; i++) {
                 //iterate the draftgrid
                 //check row 1,2
@@ -391,7 +393,7 @@ public class SolverT {
             if (region2row12) {
                 for (int j = m3; j < m3 + 3; j++) {
                     for (int l : draftGrid[c][j]) {
-                        if (samedraft1.contains(l)) {
+                        if (samedraft1.contains(l) ) {
                             samedraft2.add(l);
                             //samedraft2 can be at most 2 drafts
                             region3row3 = true;

@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by apple on 2017-09-01.
@@ -217,6 +219,269 @@ public class SolverT {
         }
         return board;
     }
+
+    public int[][] multipleLine(int[][] board){
+        //check region horizontally,check1,2,3; 4,5,6; 7,8,9
+        //check1,2,3
+        //regionarowb(a,b);
+        //region1
+        //check row1,2
+        checkrowab(0,1);
+        checkrowab(1,2);
+        checkrowab(0,2);
+        checkrowab(3,4);
+        checkrowab(4,5);
+        checkrowab(3,5);
+        checkrowab(6,7);
+        checkrowab(6,8);
+        checkrowab(7,8);
+
+        checkcolab(0,1);
+        checkcolab(1,2);
+        checkcolab(0,2);
+        checkcolab(3,4);
+        checkcolab(4,5);
+        checkcolab(3,5);
+        checkcolab(6,7);
+        checkcolab(6,8);
+        checkcolab(7,8);
+
+
+        return board;
+
+        //check row1,3
+
+        //check4,5,6
+
+
+        //check7,8,9
+
+
+        //
+    }
+    public void checkcolab(int a, int b){
+        boolean region1row12 = false;
+        Set<Integer>samedraft = new HashSet<Integer>();
+        for(int i = 0; i < 3; i++){
+            //iterate the draftgrid
+            //check row 1,2
+            for(int j: draftGrid[i][a]){
+                for(int k=0;k<3;k++){
+                    if(draftGrid[k][b].contains(j)) {
+                        samedraft.add(j);
+                        region1row12 = true;
+                    }
+                }
+            }
+        }
+
+        //region2
+        boolean region2row12 = false;
+        Set<Integer>samedraft1 = new HashSet<Integer>();
+        if(region1row12){
+            for(int i =3; i<6; i++){
+                for(int j: draftGrid[i][a]){
+                    for(int k=3;k<6;k++){
+                        if(draftGrid[k][b].contains(j)  &&  samedraft.contains(j)) {
+                            samedraft1.add(j);
+                            region2row12 = true;
+                        }
+                    }
+                }
+            }
+        }
+        boolean region3row12 = false;
+        boolean region3row123 = false;
+        Set<Integer>samedraft2 = new HashSet<Integer>();
+        int same = 0;
+        int c = getc(a,b);
+        if(region2row12) {
+            for (int i = 6; i < 9; i++) {
+                for (int j : draftGrid[i][a]) {
+                    for (int k = 6; k < 9; k++) {
+                        if (draftGrid[k][b].contains(j) && samedraft1.contains(j)) {
+                            samedraft2.add(j);
+                            region3row12 = true;
+                        }
+                    }
+                    if (region3row12) {
+                        for (int l = 6; l < 9; l++) {
+                            for(int h: draftGrid[l][c]){
+                                if(samedraft2.contains(h)){
+                                    region3row123 = true;
+                                    same = h;
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+        }
+        if(region3row123){
+            if(c == 0 || c == 2 || c == 3 || c == 5 || c == 6 || c == 8){
+                for(int i=a; i<b+1; i++){
+                    for(int j =0; j<3; j++){
+                        if(draftGrid[j][i].contains(same)){
+                            draftGrid[j][i].remove(Integer.valueOf(same));
+                        }
+                    }
+                }
+            }else{
+                for(int j=0;j<3;j++){
+                    if(draftGrid[j][c-1].contains(same)){
+                        draftGrid[j][c-1].remove(Integer.valueOf(same));
+                    }
+                    if(draftGrid[j][c+1].contains(same)){
+                        draftGrid[j][c+1].remove(Integer.valueOf(same));
+                    }
+                }
+            }
+
+        }
+    }
+
+
+    public void checkrowab(int a, int b){
+        boolean region1row12 = false;
+        Set<Integer> samedraft = new HashSet<Integer>();
+        for(int i = 0; i < 3; i++){
+            //iterate the draftgrid
+            //check row 1,2
+            for(int j: draftGrid[a][i]){
+                for(int k=0;k<3;k++){
+                    if(draftGrid[b][k].contains(j)) {
+                        samedraft.add(j);
+                        region1row12 = true;
+                    }
+                }
+            }
+        }
+
+        //region2
+        boolean region2row12 = false;
+        Set<Integer>samedraft1 = new HashSet<Integer>();
+        if(region1row12){
+            for(int i =3; i<6; i++){
+                for(int j: draftGrid[a][i]){
+                    for(int k=3;k<6;k++){
+                        if(draftGrid[b][k].contains(j)  &&  samedraft.contains(j)) {
+                            samedraft1.add(j);
+                            region2row12 = true;
+                        }
+                    }
+                }
+            }
+        }
+        boolean region3row12 = false;
+        boolean region3row123 = false;
+        Set<Integer>samedraft2 = new HashSet<Integer>();
+        int same = 0;
+        int c = getc(a,b);
+        if(region2row12) {
+            for (int i = 6; i < 9; i++) {
+                for (int j : draftGrid[a][i]) {
+                    for (int k = 6; k < 9; k++) {
+                        if (draftGrid[b][k].contains(j) && samedraft1.contains(j)) {
+                            samedraft2.add(j);
+                            region3row12 = true;
+                        }
+                    }
+                    if (region3row12) {
+                        for (int l = 6; l < 9; l++) {
+                            for(int h: draftGrid[c][l]){
+                                if(samedraft2.contains(h)){
+                                    region3row123 = true;
+                                    same = h;
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+        }
+        if(region3row123){
+            if(c == 0 || c == 2 || c == 3 || c == 5 || c == 6 || c == 8){
+                for(int i=a; i<b+1; i++){
+                    for(int j =0; j<3; j++){
+                        if(draftGrid[i][j].contains(same)){
+                            draftGrid[i][j].remove(Integer.valueOf(same));
+                        }
+                    }
+                }
+            }else{
+                for(int j=0;j<3;j++){
+                    if(draftGrid[c-1][j].contains(same)){
+                        draftGrid[c-1][j].remove(Integer.valueOf(same));
+                    }
+                    if(draftGrid[c+1][j].contains(same)){
+                        draftGrid[c+1][j].remove(Integer.valueOf(same));
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    public int getc(int a, int b){
+        int k =a+b;
+        int c = 0;
+        switch (k){
+            case 1:
+                c = 2;
+                break;
+            case 3:
+                c = 0;
+                break;
+            case 2:
+                c = 1;
+                break;
+            case 7:
+                c = 5;
+                break;
+            case 8:
+                c = 4;
+                break;
+            case 9:
+                c = 3;
+                break;
+            case 13:
+                c = 8;
+                break;
+            case 14:
+                c = 7;
+                break;
+            case 15:
+                c = 6;
+                break;
+            default :
+                break;
+        }
+        return c;
+    }
+
+//    public boolean regionarowb(boolean row12, ArrayList<Integer>samedraft, int a, int b){
+//        for(int i = a*3; i < a*3+3; i++){
+//            //iterate the draftgrid
+//            //check row 1,2
+//            for(int j: draftGrid[0][i]){
+//                for(int k=0;k<3;k++){
+//                    if(draftGrid[1][k].contains(j)) {
+//                        samedraft.add(j);
+//                        row12 = true;
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+
 
     public boolean compareArrayList(ArrayList<Integer> a, ArrayList<Integer> b) {
         if (a.size() != b.size()) {

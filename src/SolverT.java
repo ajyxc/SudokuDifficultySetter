@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -89,6 +90,8 @@ public class SolverT {
         return false;
     }
 
+
+    //naked pairs
     public int[][] candidateLine(int[][] board, int i, int j) {
         //2 grid with only 2 same drafts
         if (possibleEntries(i, j).size() == 2) {
@@ -220,8 +223,60 @@ public class SolverT {
         return board;
     }
 
+
+    //need to check row, column, region
+    //3 cases: 1: 12,13,123; 13,23,123; 12,23,123
+    //           2: 123,123,12; 123,123,13; 123,123,23
+    //              3:123,123,123
+    //naked triple
+    public int[][] nakedTriples(int[][] board) {
+        //check row
+        //case 3
+        //todo: not done
+        boolean found = false;
+        List<Integer> samedraft = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (draftGrid[i][j].size() == 3) {
+                    samedraft = draftGrid[i][j];
+                }
+            }
+        }
+
+        //case 1/2
+        boolean foundFirst = false;
+        boolean foundSecond = false;
+        int same1 = 0, same2 = 0;
+        int same3 = 0;
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (draftGrid[i][j].size() == 2) {
+                    foundFirst = true;
+                    same1 = draftGrid[i][j].get(0);
+                    same2 = draftGrid[i][j].get(1);
+
+
+                    //test case1
+                    //check this row, if another cell contain one and one same number,with size 2
+                    for (int k = 0; k < 9; k++) {
+                        ArrayList<Integer> temp = draftGrid[i][k];
+                        if (k != j && temp.size() == 2 && containOne(temp, same1, same2)) {
+                            if (temp.contains(same1)) {
+                                temp.remove(Integer.valueOf(same1));
+                                same3 = temp.get(0);
+                            }
+                        }
+                    }
+
+
+                }
+            }
+        }
+        return board;
+    }
+
     //todo:fix parameter and return type
-    public int[][] multipleLine(int[][] board) {
+    public void multipleLine() {
         //check region horizontally,check1,2,3; 4,5,6; 7,8,9
         //check1,2,3
         //regionarowb(a,b);
@@ -249,7 +304,7 @@ public class SolverT {
         checkcolab(7, 8);
 
 
-        return board;
+        //return board;
 
 
         //
@@ -270,11 +325,11 @@ public class SolverT {
 
             boolean region1row12 = false;
             Set<Integer> samedraft = new HashSet<Integer>();
-            for (int i = m1; i < m1+3; i++) {
+            for (int i = m1; i < m1 + 3; i++) {
                 //iterate the draftgrid
                 //check row 1,2
                 for (int j : draftGrid[i][a]) {
-                    for (int k = m1; k < m1+3; k++) {
+                    for (int k = m1; k < m1 + 3; k++) {
                         if (draftGrid[k][b].contains(j) && !draftGrid[k][c].contains(j)) {
                             samedraft.add(j);
                             region1row12 = true;
@@ -287,9 +342,9 @@ public class SolverT {
             boolean region2row12 = false;
             Set<Integer> samedraft1 = new HashSet<Integer>();
             if (region1row12) {
-                for (int i = m2; i < m2+3; i++) {
+                for (int i = m2; i < m2 + 3; i++) {
                     for (int j : draftGrid[i][a]) {
-                        for (int k = m2; k < m2+3; k++) {
+                        for (int k = m2; k < m2 + 3; k++) {
                             if (draftGrid[k][b].contains(j) && samedraft.contains(j) && !draftGrid[c][k].contains(j)) {
                                 samedraft1.add(j);
                                 region2row12 = true;
@@ -303,7 +358,7 @@ public class SolverT {
             Set<Integer> samedraft2 = new HashSet<Integer>();
 
             if (region2row12) {
-                for (int j = m3; j < m3+3; j++) {
+                for (int j = m3; j < m3 + 3; j++) {
                     for (int l : draftGrid[j][c]) {
                         if (samedraft1.contains(l)) {
                             samedraft2.add(l);
@@ -319,14 +374,14 @@ public class SolverT {
                 for (int same : samedraft2) {
                     if (c == 0 || c == 2 || c == 3 || c == 5 || c == 6 || c == 8) {
                         for (int i = a; i < b + 1; i++) {
-                            for (int j = m3; j < m3+3; j++) {
+                            for (int j = m3; j < m3 + 3; j++) {
                                 if (draftGrid[j][i].contains(same)) {
                                     draftGrid[j][i].remove(Integer.valueOf(same));
                                 }
                             }
                         }
                     } else {
-                        for (int j = m3; j < m3+3; j++) {
+                        for (int j = m3; j < m3 + 3; j++) {
                             if (draftGrid[j][c - 1].contains(same)) {
                                 draftGrid[j][c - 1].remove(Integer.valueOf(same));
                             }
@@ -393,7 +448,7 @@ public class SolverT {
             if (region2row12) {
                 for (int j = m3; j < m3 + 3; j++) {
                     for (int l : draftGrid[c][j]) {
-                        if (samedraft1.contains(l) ) {
+                        if (samedraft1.contains(l)) {
                             samedraft2.add(l);
                             //samedraft2 can be at most 2 drafts
                             region3row3 = true;
@@ -482,6 +537,10 @@ public class SolverT {
 //        }
 //    }
 
+
+    public boolean containOne(ArrayList<Integer> draft, int a, int b) {
+        return ((draft.contains(a) && !draft.contains(b)) || (draft.contains(b) && !draft.contains(a)));
+    }
 
     public boolean compareArrayList(ArrayList<Integer> a, ArrayList<Integer> b) {
         if (a.size() != b.size()) {

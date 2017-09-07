@@ -242,19 +242,97 @@ public class SolverT {
                 }
             }
         }
+        case1();
 
-        //case 1/2
+        case2();
+        return board;
+    }
+
+    private void case2() {
+
         boolean foundFirst = false;
         boolean foundSecond = false;
-        int same1 = 0, same2 = 0;
+        boolean foundThird = false;
+        int same1 = 0;
+        int same2 = 0;
         int same3 = 0;
+
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 9; j++){
+                int secondcolr = 0;
+                int thirdcolr = 0;
+
+                if(draftGrid[i][j].size() == 3){
+                    foundFirst = true;
+                    same1 = draftGrid[i][j].get(0);
+                    same2 = draftGrid[i][j].get(1);
+                    same3 = draftGrid[i][j].get(2);
+                }
+
+                //case2 start checking row
+                if(foundFirst) {
+                    for (int k = 0; k < 9; k++) {
+                        if (k != j && compareArrayList(draftGrid[i][k], draftGrid[i][j])) {
+                            foundSecond = true;
+                            secondcolr = k;
+                        }
+                    }
+                }
+
+                if(foundSecond){
+                    for(int k =0; k < 9; k++){
+                        if(k != j && k != secondcolr && containTwo(draftGrid[i][k], draftGrid[i][j]) && draftGrid[i][k].size() == 2){
+                            foundThird = true;
+                            thirdcolr = k;
+                        }
+                    }
+                }
+
+                ruleOutFromRow(foundThird, i, j, secondcolr, thirdcolr, same1, same2,same3);
+
+                //end checking row
+
+            }
+        }
+
+
+        //end checking row
+    }
+
+
+    private void case1(){
+        //case 1/2
+        //todo: make sure the second found not to be considered as the first found, get rid of duplication
+        boolean foundFirst = false;
+        boolean foundSecondr = false;
+        boolean foundThirdr = false;
+        boolean foundSecondc = false;
+        boolean foundThirdc = false;
+        boolean foundSecondg = false;
+        boolean foundThirdg = false;
+        int same1 = 0, same2 = 0;
+
+
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
+                int secondcolr = j;
+                int thirdcolr = j;
+
+                int secondcolc = j;
+                int thirdcolc = j;
+
+                int secondcolg = j;
+                int thirdcolg = j;
+
                 if (draftGrid[i][j].size() == 2) {
                     foundFirst = true;
                     same1 = draftGrid[i][j].get(0);
                     same2 = draftGrid[i][j].get(1);
+                }
 
+                // start checking row case1
+                int same3r = 0;
+                if (foundFirst) {
 
                     //test case1
                     //check this row, if another cell contain one and one same number,with size 2
@@ -263,17 +341,153 @@ public class SolverT {
                         if (k != j && temp.size() == 2 && containOne(temp, same1, same2)) {
                             if (temp.contains(same1)) {
                                 temp.remove(Integer.valueOf(same1));
-                                same3 = temp.get(0);
+                                same3r = temp.get(0);
+                                foundSecondr = true;
+                                secondcolr = k;
                             }
                         }
                     }
+                }
+                //check this row, if another cell same1,2,3{
+                if (foundSecondr) {
+                    for (int k = 0; k < 9; k++) {
+                        ArrayList<Integer> temp = draftGrid[i][k];
+                        if (temp.size() == 3 && temp.contains(same1) && temp.contains(same2) && temp.contains(same3r)) {
+                            foundThirdr = true;
+                            thirdcolr = k;
+                        }
+                    }
+                }
+                ruleOutFromRow(foundThirdr, i, j, secondcolr,thirdcolr, same1, same2, same3r);
+                //rule out same123 from that row
+//                if (foundThirdr) {
+//                    for (int k = 0; k < 9; k++) {
+//                        if (k != j && k != secondcolr && k != thirdcolr) {
+//                            for (int l : draftGrid[i][k]) {
+//                                if (l == same1 || l == same2 || l == same3r) {
+//                                    draftGrid[i][k].remove(Integer.valueOf(l));
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+                //end checking row case1
+
+                //todo: double check whether can check col in this for loop or not
+                //start checking col case1
+                int same3c = 0;
+                if (foundFirst) {
+
+                    //test case1
+                    //check this row, if another cell contain one and one same number,with size 2
+                    for (int k = 0; k < 9; k++) {
+                        ArrayList<Integer> temp = draftGrid[k][j];
+                        if (k != i && temp.size() == 2 && containOne(temp, same1, same2)) {
+                            if (temp.contains(same1)) {
+                                temp.remove(Integer.valueOf(same1));
+                                same3c = temp.get(0);
+                                foundSecondc = true;
+                                secondcolc = k;
+                            }
+                        }
+                    }
+                }
+                //check this row, if another cell same1,2,3{
+                if (foundSecondc) {
+                    for (int k = 0; k < 9; k++) {
+                        ArrayList<Integer> temp = draftGrid[k][j];
+                        if (temp.size() == 3 && temp.contains(same1) && temp.contains(same2) && temp.contains(same3c)) {
+                            foundThirdc = true;
+                            thirdcolc = k;
+                        }
+                    }
+                }
+
+                //rule out same123 from that row
+                if (foundThirdc) {
+                    for (int k = 0; k < 9; k++) {
+                        if (k != j && k != secondcolc && k != thirdcolc) {
+                            for (int l : draftGrid[k][j]) {
+                                if (l == same1 || l == same2 || l == same3c) {
+                                    draftGrid[k][j].remove(Integer.valueOf(l));
+                                }
+                            }
+                        }
+                    }
+                }
+                //end checking col case1
 
 
+                //start checking region case1
+                int row = (int) i / 3;
+                int col = (int) j / 3;
+                int same3g = 0;
+                if (foundFirst) {
+                    for (int k = row * 3; k < row * 3 + 3; k++) {
+                        for (int l = col * 3; l < col * 3 + 3; l++) {
+                            ArrayList<Integer> temp = draftGrid[k][l];
+                            if (k != j && temp.size() == 2 && containOne(temp, same1, same2)) {
+                                if (temp.contains(same1)) {
+                                    temp.remove(Integer.valueOf(same1));
+                                    same3g = temp.get(0);
+                                    foundSecondg = true;
+                                    secondcolg = k;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //check this region, if another cell same1,2,3{
+                if (foundSecondg) {
+                    for (int k = row * 3; k < row * 3 + 3; k++) {
+                        for (int l = col * 3; l < col * 3 + 3; l++) {
+                            ArrayList<Integer> temp = draftGrid[k][l];
+                            if (temp.size() == 3 && temp.contains(same1) && temp.contains(same2) && temp.contains(same3g)) {
+                                foundThirdg = true;
+                                thirdcolg = k;
+                            }
+                        }
+                    }
+                }
+
+                //rule out same123 from that region
+                if (foundThirdg) {
+                    for (int k = row * 3; k < row * 3 + 3; k++) {
+                        for (int l = col * 3; l < col * 3 + 3; l++) {
+                            if (k != j && k != secondcolg && k != thirdcolg) {
+                                for (int t : draftGrid[k][l]) {
+                                    if (t == same1 || t == same2 || t == same3g) {
+                                        draftGrid[k][l].remove(Integer.valueOf(t));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //end checking region
+
+
+
+            }
+        }
+    }
+
+    private void ruleOutFromRow(boolean foundThird, int i, int j, int secondcol, int thirdcol, int same1, int same2, int same3) {
+        if (foundThird) {
+            for (int k = 0; k < 9; k++) {
+                if (k != j && k != secondcol && k != thirdcol) {
+                    for (int l : draftGrid[i][k]) {
+                        if (l == same1 || l == same2 || l == same3) {
+                            draftGrid[i][k].remove(Integer.valueOf(l));
+                        }
+                    }
                 }
             }
         }
-        return board;
     }
+
 
     //todo:fix parameter and return type
     public void multipleLine() {
@@ -538,11 +752,22 @@ public class SolverT {
 //    }
 
 
-    public boolean containOne(ArrayList<Integer> draft, int a, int b) {
+    private boolean containTwo(ArrayList<Integer>check, ArrayList<Integer>subject){
+        int count = 0;
+        for(int i : subject){
+            if(i == check.get(0) || i == check.get(1)){
+                count++;
+            }
+        }
+        return count == 3;
+    }
+
+
+    private boolean containOne(ArrayList<Integer> draft, int a, int b) {
         return ((draft.contains(a) && !draft.contains(b)) || (draft.contains(b) && !draft.contains(a)));
     }
 
-    public boolean compareArrayList(ArrayList<Integer> a, ArrayList<Integer> b) {
+    private boolean compareArrayList(ArrayList<Integer> a, ArrayList<Integer> b) {
         if (a.size() != b.size()) {
             return false;
         }
